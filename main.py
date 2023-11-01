@@ -40,9 +40,9 @@ async def process_help_command(message: Message):
 @dp.message(Command(commands=["file"]))
 async def process_file_comand(message: Message):
     #chat_id = message.chat.id
-    bot_file_in_id = message.document.file_id 
-    bot_file_in = await bot.get_file(bot_file_in_id) 
-    await bot.download_file(bot_file_in.file_path, "file_in.txt") 
+    bot_file_in_id = message.document.file_id
+    bot_file_in = await bot.get_file(bot_file_in_id)
+    await bot.download_file(bot_file_in.file_path, "file_in.txt")
     file_in = open("file_in.txt", encoding = 'utf-8', mode = 'r')
     file_in_data = file_in.read()
 
@@ -78,4 +78,3 @@ async def send_echo(message: Message):
 
 if __name__ == '__main__':
     dp.run_polling(bot)
-

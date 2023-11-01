@@ -46,30 +46,9 @@ conj_dict = {
     'ADJ' : 'определение',
 }
 
-en_word_dict = {
-    'root': 'Root',
-    'amod': 'Adjectival modifier',
-    'punct': 'Punctuation',
-    'conj': 'Conjunction',
-    'nsubj': 'Nominal subject',
-    'obj': 'Object',
-    'advmod': 'Adverbial modifier',
-    'xcomp': 'Open clausal complement',
-    'iobj': 'Indirect object',
-    'case': 'Case marking',
-    'obl': 'Oblique nominal',
-    'cc': 'Coordinating conjunction',
-    'nmod': 'Nominal modifier',
-    'appos': 'Appositional modifier',
-    'det': 'Determiner',
-    'cop': 'Copula',
-    'csubj': 'Clausal subject',
-    'discourse': 'Discourse element',
-    'mark': 'Marker',
-    'parataxis': 'Parataxis',
-    'flat:name': 'Name',
-    'acl': 'Clausal modifier of noun (adjectival clause)',
-    'ccomp': 'Clausal complement'
+csubj_dict = {
+    'NOUN' : 'подлежащее',
+    'VERB' : 'сказуемое',
 }
 
 def syntax_func(text:str):
@@ -92,8 +71,10 @@ def syntax_func(text:str):
                 word_output += [str(i[2]) + ' - ' + str(nmod_dict[i[15]])]
             elif i[5] == "conj":
                 word_output += [str(i[2]) + ' - ' + str(conj_dict[i[15]])]
+            elif i[5] == "csubj":
+                word_output += [str(i[2]) + ' - ' + str(csubj_dict[i[15]])]
             else:
-                word_output += [str(i[2]) + ' - ' + str(word_dict[i[5]])]
+                word_output += [str(i[2]) + ' - ' + str([i[5]])]
         except:
             word_output += [str(i[2]) + ' - ' + str(i[5]) + ' ' + str(i[15])]
 
