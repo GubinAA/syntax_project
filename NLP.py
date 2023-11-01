@@ -74,7 +74,7 @@ def syntax_func(text:str):
             elif i[5] == "csubj":
                 word_output += [str(i[2]) + ' - ' + str(csubj_dict[i[15]])]
             else:
-                word_output += [str(i[2]) + ' - ' + str([i[5]])]
+                word_output += [str(i[2]) + ' - ' + str(word_dict[i[5]])]
         except:
             word_output += [str(i[2]) + ' - ' + str(i[5]) + ' ' + str(i[15])]
 
