@@ -1,10 +1,18 @@
-from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
-from aiogram.types import Message
 from NLP import syntax_func
 from token_1 import BOT_TOKEN
+
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import Command
+from aiogram.types import Message
 from aiogram.types import FSInputFile
-from aiogram.types import BufferedInputFile
+from PIL import Image
+
+import requests
+import io
+import pytesseract
+
+
+pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
 TOKEN = BOT_TOKEN()
 
@@ -60,11 +68,10 @@ async def process_file_comand(message: Message):
         'Произошла какая-то ошибка, попробуйте еще раз'
     )
 
-
-# Этот хэндлер будет срабатывать на любые ваши текстовые сообщения,
+# Этот хэндлер будет срабатывать на любые ваши текстовые сообщения
 # кроме команд "/start" "/help" "/file"
-@dp.message()
-async def send_echo(message: Message):
+@dp.message(F.text)
+async def handle_text_message(message: Message):
     try:
         text = str()
         for i in syntax_func(message.text):
@@ -75,6 +82,36 @@ async def send_echo(message: Message):
         'Произошла какая-то ошибка, попробуйте еще раз'
     )
 
+@dp.message(F.photo)
+async def handle_photo_message(message: types.Message):
+    photo = message.photo[-1]
+    recognized_text = await recognize_text(photo.file_id)
+    if recognized_text:
+        try:
+            text = str()
+            for i in syntax_func(recognized_text):
+                text += str(i) +'\n'
+            await message.reply(text=text)
+        except:
+            await message.answer(
+            'Произошла какая-то ошибка, попробуйте еще раз'
+    )
+
+async def recognize_text(photo_file_id):
+    # Получите информацию о фотографии из Telegram
+    photo = await bot.get_file(photo_file_id)
+    photo_url = f'https://api.telegram.org/file/bot{TOKEN}/{photo.file_path}'
+
+    # Скачайте фотографию
+    photo_data = requests.get(photo_url).content
+
+    # Преобразуйте фотографию в объект Image из библиотеки PIL
+    image = Image.open(io.BytesIO(photo_data))
+
+    # Используйте pytesseract для распознавания текста на фотографии
+    text = pytesseract.image_to_string(image, lang = 'rus')
+
+    return text
 
 if __name__ == '__main__':
     dp.run_polling(bot)
