@@ -88,10 +88,11 @@ async def handle_photo_message(message: types.Message):
     recognized_text = await recognize_text(photo.file_id)
     if recognized_text:
         try:
+            await message.reply(f'{recognized_text}\n')
             text = str()
             for i in syntax_func(recognized_text):
                 text += str(i) +'\n'
-            await message.reply(text=text)
+            await message.answer(text=text)
         except:
             await message.answer(
             'Произошла какая-то ошибка, попробуйте еще раз'
