@@ -1,4 +1,5 @@
-
+# NLP
+# Имортируем библиотеку для обработки текста
 
 from natasha import (
     Segmenter,
@@ -8,7 +9,7 @@ from natasha import (
     Doc
 )
 
-
+#Словарь для перевода однозначных английских членов предложения в русские
 
 word_dict = {
     'root': 'сказуемое',
@@ -34,16 +35,18 @@ word_dict = {
     'ccomp' : 'сказуемое',
     'advcl' : 'обстоятельство',
     'nummod:gov' : 'числительное',
-    'fixed' : 'обстоятельство', #Я не уверен
-    'nsubj:pass' : 'подлежащее', #Я не уверен
-    'aux:pass' : 'определение', #Я не уверен
-    'aux' : 'определение', #Я не уверен
-    'obl:agent' : 'дополнение', #Я не уверен
-    'expl' : 'дополнение', #Я не уверен
-    'acl:relcl': 'сказуемое', #Я не уверен
+    'fixed' : 'обстоятельство',
+    'nsubj:pass' : 'подлежащее',
+    'aux:pass' : 'определение',
+    'aux' : 'определение',
+    'obl:agent' : 'дополнение',
+    'expl' : 'дополнение',
+    'acl:relcl': 'сказуемое',
     'nummod:entity' : 'числительное',
     'nummod' : 'числительное'
             }
+
+#Словарь для перевода nmod в русские члены предложения
 
 nmod_dict = {
     'NOUN' : 'обстоятельство',
@@ -55,6 +58,8 @@ nmod_dict = {
     'VERB' : 'сказуемое'
 }
 
+#Словарь для перевода conj в русские члены предложения
+
 conj_dict = {
     'NOUN' : 'дополнение',
     'VERB' : 'сказуемое',
@@ -64,6 +69,8 @@ conj_dict = {
     'PRON' : 'определение'
 }
 
+#Словарь для перевода csubj в русские члены предложения
+
 csubj_dict = {
     'NOUN' : 'подлежащее',
     'VERB' : 'сказуемое',
@@ -72,17 +79,27 @@ csubj_dict = {
 def syntax_func(text:str):
     #Обработка языка
     emb = NewsEmbedding()
+    #создаем сегментер
     segmenter = Segmenter()
+    #создаем объект для обработки синтакситеческого состава
     syntax_parser = NewsSyntaxParser(emb)
+    #создаем объект для обработки морфологического состава
     morph_tagger = NewsMorphTagger(emb)
+    #переводим полученный текст в формат библиотеки
     doc = Doc(text)
     doc_2 = Doc(text)
+    #cегментируем
     doc_2.segment(segmenter)
     doc.segment(segmenter)
+    #получаем информацию о синтакситеческом составе предложения
     doc.parse_syntax(syntax_parser)
+    #получаем информацию о морфологическом составе предложения
     doc_2.tag_morph(morph_tagger)
+    #объединяем два списка
     token_list = [list(i1) + list(i2) for i1, i2 in zip(doc.tokens, doc_2.tokens)]
+    #создаем выводной лист
     word_output = []
+    #для каждого слова из полученного текста проверяем английский член предложения и при помощи словарей переводим в русские
     for i in token_list:
         try:
             if i[5] == "nmod":
@@ -95,5 +112,5 @@ def syntax_func(text:str):
                 word_output += [str(i[2]) + ' - ' + str(word_dict[i[5]])]
         except:
             word_output += [str(i[2]) + ' - ' + str(i[5]) + ' ' + str(i[15])]
-
+    #возвращаем заполненный список
     return word_output
